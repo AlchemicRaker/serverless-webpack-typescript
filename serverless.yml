@@ -1,0 +1,29 @@
+service: serverless-example
+
+configValidationMode: error
+
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  lambdaHashingVersion: 20201221
+  stage: dev
+  environment:
+    STAGE: ${sls:stage}
+    DOMAIN_NAME: ${self:custom.env.domainName}
+
+custom:
+  env: ${file(./env/${sls:stage}-env.yml)}
+
+functions:
+  hello:
+    handler: src/hello.handler
+    events:
+      - httpApi:
+          path: /
+          method: get
+      - httpApi:
+          path: /{proxy+}
+          method: get
